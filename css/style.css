@@ -772,28 +772,36 @@ footer {
         grid-column: auto;
     }
 
-    /* Staggered Mesh for "Our Work" */
+    /* Swipe Gallery for "Our Work" */
     .work-grid {
-        display: block;
-        column-count: 2;
-        column-gap: 1rem;
+        display: flex;
+        overflow-x: auto;
+        scroll-snap-type: x mandatory;
+        gap: 1.5rem;
+        padding: 0 10%;
+        scroll-behavior: smooth;
+        column-count: auto;
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .work-grid::-webkit-scrollbar {
+        display: none;
     }
 
     .work-item {
-        display: inline-block;
-        width: 100%;
+        flex: 0 0 85%;
+        scroll-snap-align: center;
         height: auto;
-        margin-bottom: 1rem;
-        break-inside: avoid;
+        margin-bottom: 0;
+        display: block;
+        /* Reset from inline-block */
     }
 
     .work-item img {
-        height: 200px;
-    }
-
-    /* Alternating heights for true staggered look */
-    .work-item:nth-child(even) img {
-        height: 250px;
+        height: 450px;
+        /* Taller, high-end vertical feel */
+        object-fit: cover;
     }
 
     .service-grid {
