@@ -195,26 +195,66 @@ document.addEventListener('DOMContentLoaded', () => {
             chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
         };
 
+        const responsePools = {
+            status: [
+                "I'm doing great, thank you for asking! Just here and ready to help you get moving again.",
+                "All systems are clear and our dispatch team is currently on standby. How can I make your day better?"
+            ],
+            greetings: [
+                "Hello! How can the Luxurious Towing team assist you today?",
+                "Hi there! I'm your signature concierge. How's your day going despite the car trouble?",
+                "Greetings! I'm here to help you with any premium recovery or transport questions."
+            ],
+            identity: [
+                "I'm your Luxurious Towing Signature Concierge—dedicated to making your recovery experience as seamless as possible.",
+                "I represent Michigan's elite towing team. I'm here to guide you through our premium services and handle any questions you have."
+            ],
+            capabilities: [
+                "You can ask me about our white-glove exotic recovery, our Michigan-wide coverage, or get a quick estimate on pricing!",
+                "I'm trained to help with service details, accident recovery procedures, and helping you understand what makes our 'Luxurious' service different."
+            ],
+            exotics: [
+                "Exotics are our specialty. We use non-marring soft-strap tie-downs and low-clearance ramps to treat your McLaren, Corvette, or Ferrari with absolute care.",
+                "We understand the value of your asset. Our team is trained specifically for luxury car transport, ensuring zero-damage recovery every time."
+            ],
+            location: [
+                "We provide 24/7 premium recovery across the entire state of Michigan. We're most rapid in the Metro Detroit and Southeast Michigan areas!",
+                "Wherever you are in Michigan, our dispatch is on call. We specialize in spanning the whole state for high-end recovery."
+            ],
+            pricing: [
+                "Every job is unique, but our premium local towing typically ranges between $95 - $250 depending on the vehicle and distance.",
+                "For exotic recovery, we provide bespoke quotes. Usually, you're looking at a $150 base with distance fees, but the 'Request Now' form will give you the most accurate number."
+            ],
+            services: [
+                "We handle everything: from emergency lockouts and jumpstarts to heavy-duty truck recovery and long-distance transport.",
+                "Whether it's a simple tire change or a complex accident recovery, we bring the same 'White Glove' level of care to every job."
+            ]
+        };
+
+        const pickRandom = (pool) => pool[Math.floor(Math.random() * pool.length)];
+
         const generateResponse = (input) => {
             const query = input.toLowerCase();
 
-            if (query.includes('mclaren') || query.includes('corvette') || query.includes('exotic') || query.includes('luxury')) {
-                return "We specialize in white-glove recovery for exotics. We use soft-strap tie-downs and low-clearance ramps to ensure your vehicle is treated with absolute care.";
+            if (query.includes('how are you') || query.includes('how\'s it going')) return pickRandom(responsePools.status);
+            if (query.includes('hello') || query.includes('hi') || query.includes('hey')) return pickRandom(responsePools.greetings);
+            if (query.includes('who are you') || query.includes('your name')) return pickRandom(responsePools.identity);
+            if (query.includes('what can i ask') || query.includes('what can you do')) return pickRandom(responsePools.capabilities);
+
+            if (query.includes('mclaren') || query.includes('corvette') || query.includes('exotic') || query.includes('luxury') || query.includes('ferrari')) {
+                return pickRandom(responsePools.exotics);
             }
-            if (query.includes('location') || query.includes('detroit') || query.includes('michigan') || query.includes('area')) {
-                return "We provide 24/7 premium recovery across the entire state of Michigan, with rapid dispatch in the Metro Detroit area.";
+            if (query.includes('location') || query.includes('detroit') || query.includes('michigan') || query.includes('area') || query.includes('where')) {
+                return pickRandom(responsePools.location);
             }
-            if (query.includes('price') || query.includes('cost') || query.includes('quote')) {
-                return "Our pricing is transparent and based on vehicle type and distance. You can use the 'Request Now' form in the contact section for a precise estimate.";
+            if (query.includes('price') || query.includes('cost') || query.includes('quote') || query.includes('much')) {
+                return pickRandom(responsePools.pricing);
             }
-            if (query.includes('services') || query.includes('towing') || query.includes('lockout')) {
-                return "We offer everything from emergency lockouts and jumpstarts to long-distance transport and heavy-duty recovery.";
-            }
-            if (query.includes('hello') || query.includes('hi')) {
-                return "Hello! How can the Luxurious Towing team assist you today?";
+            if (query.includes('services') || query.includes('towing') || query.includes('lockout') || query.includes('help')) {
+                return pickRandom(responsePools.services);
             }
 
-            return "That's an excellent question. To give you the most accurate assistance, I recommend submitting a quick request through our form, or I can tell you more about our exotic vehicle specialization.";
+            return "That's an interesting point! To give you the absolute best assistance, I recommend a quick chat with our dispatch through the 'Request Now' form, or I can tell you more about our Michigan coverage.";
         };
 
         const handleSend = () => {
