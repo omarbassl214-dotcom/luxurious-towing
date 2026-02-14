@@ -91,41 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // VIDEO HERO LOGIC (Canvas-based to bypass browser controls)
-    const scrollAnim = document.getElementById('scroll-animation');
+    // VIDEO HERO LOGIC (Simple Autoplay/Loop)
     const vid = document.getElementById('v0');
-    const canvas = document.getElementById('hero-canvas');
-
-    if (scrollAnim && vid && canvas) {
-        const ctx = canvas.getContext('2d');
-
-        const render = () => {
-            if (vid.readyState >= 2) { // Ensure video has enough data
-                if (canvas.width !== vid.videoWidth || canvas.height !== vid.videoHeight) {
-                    canvas.width = vid.videoWidth;
-                    canvas.height = vid.videoHeight;
-                    console.log('Canvas resized to:', canvas.width, canvas.height);
-                }
-                ctx.drawImage(vid, 0, 0, canvas.width, canvas.height);
-            }
-            requestAnimationFrame(render);
-        };
-
-        const startEffect = () => {
-            console.log("Starting video-to-canvas rendering...");
-            vid.play().catch(e => console.log("Auto-play blocked:", e));
-            render();
-            scrollAnim.style.display = 'block';
-            scrollAnim.style.opacity = '1';
-        };
-
-        vid.addEventListener('canplay', startEffect);
-        vid.addEventListener('play', () => console.log("Video is playing"));
-
-        // Fallback for already playing/loaded video
-        if (vid.readyState >= 2) {
-            startEffect();
-        }
+    if (vid) {
+        vid.style.opacity = '1';
+        vid.play().catch(e => console.log("Auto-play blocked:", e));
     }
 
     // Mobile Menu Toggle logic

@@ -15,12 +15,7 @@
 </head>
 
 <body>
-    <div class="global-bg-video-container">
-        <video class="global-bg-video" autoplay loop muted playsinline>
-            <source src="background.mp4" type="video/mp4">
-        </video>
-        <div class="global-bg-overlay"></div>
-    </div>
+
     <div id="splash-screen">
         <div class="logo-large">LUXURIOUS<span>TOWING</span></div>
     </div>
@@ -34,7 +29,7 @@
         <div class="video-scrub-container">
             <video id="v0" tabindex="-1" autobuffer="auto" preload="auto" playsinline muted autoplay loop
                 disablePictureInPicture disableRemotePlayback
-                style="opacity: 0; pointer-events: none; position: absolute;">
+                style="position: absolute; width: 100%; height: 100%; object-fit: cover;">
                 <source src="assets/hero-towing.mp4" type="video/mp4">
             </video>
             <canvas id="hero-canvas"></canvas>
