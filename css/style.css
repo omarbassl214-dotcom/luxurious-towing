@@ -1060,7 +1060,8 @@ body.menu-open {
     /* Let the hero section above handle clicks */
     overflow: hidden;
     background: transparent !important;
-    opacity: 0;
+    opacity: 1;
+    /* Restored visibility */
     transition: opacity 1s ease-in-out;
 }
 
@@ -1077,9 +1078,12 @@ body.menu-open {
     position: absolute;
     top: 0;
     left: 0;
-    width: 10px;
-    height: 10px;
-    opacity: 0.01;
+    width: 100%;
+    /* Sized to container */
+    height: 100%;
+    object-fit: cover;
+    opacity: 1;
+    /* Restored visibility */
     pointer-events: none;
     z-index: -1;
 }
