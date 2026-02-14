@@ -737,24 +737,39 @@ footer {
     }
 
     .bridge-container {
-        grid-template-columns: 1fr;
-        padding: 0 10%;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        padding: 0 5%;
     }
 
-    .work-grid {
-        grid-template-columns: 1fr;
+    .bridge-item {
+        padding: 1.5rem 1rem;
     }
 
-    .work-item {
-        height: 350px;
+    .bridge-item h3 {
+        font-size: 1rem;
     }
 
-    .section-header h2 {
-        font-size: 2.2rem;
+    .bridge-item p {
+        font-size: 0.8rem;
+    }
+
+    /* Make last odd item span across or stay balanced */
+    .bridge-item:last-child:nth-child(odd) {
+        grid-column: span 2;
     }
 
     .service-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .service-card {
+        padding: 1.5rem 1rem;
+    }
+
+    .service-card:last-child:nth-child(odd) {
+        grid-column: span 2;
     }
 
     .contact-container {
