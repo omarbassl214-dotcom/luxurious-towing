@@ -792,6 +792,8 @@ footer {
     .work-item {
         flex: 0 0 85%;
         scroll-snap-align: center;
+        aspect-ratio: 1 / 1;
+        /* Match PC version's square aesthetic */
         height: auto;
         margin-bottom: 0;
         display: block;
@@ -799,8 +801,8 @@ footer {
     }
 
     .work-item img {
-        height: 450px;
-        /* Taller, high-end vertical feel */
+        width: 100%;
+        height: 100%;
         object-fit: cover;
     }
 
