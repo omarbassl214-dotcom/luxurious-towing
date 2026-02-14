@@ -306,6 +306,9 @@ a {
     font-weight: 800;
     letter-spacing: 4px;
     animation: pulse 2s infinite;
+    width: 90%;
+    text-align: center;
+    max-width: 600px;
 }
 
 .logo-large span {
@@ -400,8 +403,8 @@ a {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    z-index: -5;
-    /* Above global (-10), below text content */
+    z-index: -3;
+    pointer-events: none;
 }
 
 .hero-overlay {
@@ -411,8 +414,7 @@ a {
     width: 100%;
     height: 100%;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.6));
-    z-index: -1;
-    /* Above video (-5), below content */
+    z-index: -2;
     pointer-events: none;
 }
 
