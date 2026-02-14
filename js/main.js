@@ -196,65 +196,73 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         const responsePools = {
-            status: [
-                "I'm doing great, thank you for asking! Just here and ready to help you get moving again.",
-                "All systems are clear and our dispatch team is currently on standby. How can I make your day better?"
-            ],
             greetings: [
-                "Hello! How can the Luxurious Towing team assist you today?",
-                "Hi there! I'm your signature concierge. How's your day going despite the car trouble?",
-                "Greetings! I'm here to help you with any premium recovery or transport questions."
+                "Hello! I'm the Luxurious Towing Concierge. How can I assist you with your vehicle today?",
+                "Hi there! I'm here to ensure your recovery experience is seamless. What can I do for you?",
+                "Greetings. I'm at your service. Are you looking for a quote, or do you have a question about our fleet?"
+            ],
+            status: [
+                "I'm fully operational and ready to assist! The team is currently on standby for dispatch.",
+                "I'm doing excellent, thank thank you. My priority right now is helping you. How can I be of service?"
             ],
             identity: [
-                "I'm your Luxurious Towing Signature Concierge—dedicated to making your recovery experience as seamless as possible.",
-                "I represent Michigan's elite towing team. I'm here to guide you through our premium services and handle any questions you have."
+                "I am the Signature Concierge for Luxurious Towing—an AI specialist trained to assist with efficient, high-end vehicle recovery.",
+                "I'm your virtual assistant here at Luxurious Towing. I can help with quotes, service details, and dispatch information."
             ],
             capabilities: [
-                "You can ask me about our white-glove exotic recovery, our Michigan-wide coverage, or get a quick estimate on pricing!",
-                "I'm trained to help with service details, accident recovery procedures, and helping you understand what makes our 'Luxurious' service different."
+                "I can provide instant quotes, explain our 'White Glove' recovery process for exotics, or check our coverage in your area.",
+                "I'm here to help you schedule a tow, understand our pricing, or learn more about how we handle luxury vehicles like Ferraris and McLarens."
             ],
             exotics: [
-                "Exotics are our specialty. We use non-marring soft-strap tie-downs and low-clearance ramps to treat your McLaren, Corvette, or Ferrari with absolute care.",
-                "We understand the value of your asset. Our team is trained specifically for luxury car transport, ensuring zero-damage recovery every time."
+                "We specialize in high-value assets. Our fleet uses zero-degree flatbeds and soft-strap tie-downs to ensure your McLaren, Ferrari, or Corvette is transported without a scratch.",
+                "Exotic recovery is our craft. We understand the precision required for low-clearance vehicles and use only the most advanced equipment."
             ],
             location: [
-                "We provide 24/7 premium recovery across the entire state of Michigan. We're most rapid in the Metro Detroit and Southeast Michigan areas!",
-                "Wherever you are in Michigan, our dispatch is on call. We specialize in spanning the whole state for high-end recovery."
+                "We proudly serve the entire state of Michigan, with rapid response units stationed throughout Metro Detroit and Southeast Michigan.",
+                "Our headquarters is in Detroit, but our premium network covers every corner of Michigan for long-distance and local transport."
             ],
             pricing: [
-                "Every job is unique, but our premium local towing typically ranges between $95 - $250 depending on the vehicle and distance.",
-                "For exotic recovery, we provide bespoke quotes. Usually, you're looking at a $150 base with distance fees, but the 'Request Now' form will give you the most accurate number."
+                "For a standard local tow, pricing typically starts around $95–$150. For exotics or long-distance, we provide custom quotes to ensure fairness.",
+                "Pricing varies based on vehicle type and distance. A standard hook-up is generally $125 + mileage. I can give you a precise quote if you use the 'Request Now' form!"
             ],
             services: [
-                "We handle everything: from emergency lockouts and jumpstarts to heavy-duty truck recovery and long-distance transport.",
-                "Whether it's a simple tire change or a complex accident recovery, we bring the same 'White Glove' level of care to every job."
+                "We offer a full suite of services: Emergency Recovery, Exotic Transport, Lockouts, Jumpstarts, and Heavy-Duty Hauling.",
+                "From a simple tire change to a complex accident recovery for a luxury SUV, our team handles it all with white-glove care."
+            ],
+            contact: [
+                "The fastest way to get a truck to you is by filling out the 'Request Now' form above, or calling our dispatch line directly.",
+                "I recommend clicking 'Request Now' for immediate dispatch. It sends your location directly to our drivers."
+            ],
+            fallback: [
+                "That's a great question. While I'm an expert on our towing services, I might need a bit more detail. Are you asking about pricing, location, or a specific vehicle?",
+                "I want to make sure I give you the right answer. Could you rephrase that? You can ask me about 'Cost', 'Coverage', or 'Exotic Cars'."
             ]
         };
 
         const pickRandom = (pool) => pool[Math.floor(Math.random() * pool.length)];
 
         const generateResponse = (input) => {
-            const query = input.toLowerCase();
+            const query = input.toLowerCase().trim();
 
-            if (query.includes('how are you') || query.includes('how\'s it going')) return pickRandom(responsePools.status);
-            if (query.includes('hello') || query.includes('hi') || query.includes('hey')) return pickRandom(responsePools.greetings);
-            if (query.includes('who are you') || query.includes('your name')) return pickRandom(responsePools.identity);
-            if (query.includes('what can i ask') || query.includes('what can you do')) return pickRandom(responsePools.capabilities);
+            // Greetings & Status
+            if (query.match(/^(hi|hello|hey|greetings)/)) return pickRandom(responsePools.greetings);
+            if (query.includes('how are you') || query.includes('how is it going')) return pickRandom(responsePools.status);
 
-            if (query.includes('mclaren') || query.includes('corvette') || query.includes('exotic') || query.includes('luxury') || query.includes('ferrari')) {
-                return pickRandom(responsePools.exotics);
-            }
-            if (query.includes('location') || query.includes('detroit') || query.includes('michigan') || query.includes('area') || query.includes('where')) {
-                return pickRandom(responsePools.location);
-            }
-            if (query.includes('price') || query.includes('cost') || query.includes('quote') || query.includes('much')) {
-                return pickRandom(responsePools.pricing);
-            }
-            if (query.includes('services') || query.includes('towing') || query.includes('lockout') || query.includes('help')) {
-                return pickRandom(responsePools.services);
-            }
+            // Identity & Capabilities
+            if (query.includes('who are you') || query.includes('your name') || query.includes('bot')) return pickRandom(responsePools.identity);
+            if (query.includes('what can you do') || query.includes('help me') || query.includes('capabilities')) return pickRandom(responsePools.capabilities);
 
-            return "That's an interesting point! To give you the absolute best assistance, I recommend a quick chat with our dispatch through the 'Request Now' form, or I can tell you more about our Michigan coverage.";
+            // Core Business Topics
+            if (query.includes('price') || query.includes('cost') || query.includes('much') || query.includes('quote') || query.includes('rate')) return pickRandom(responsePools.pricing);
+            if (query.includes('location') || query.includes('where') || query.includes('area') || query.includes('cover') || query.includes('michigan') || query.includes('detroit')) return pickRandom(responsePools.location);
+            if (query.includes('service') || query.includes('tow') || query.includes('haul') || query.includes('truck') || query.includes('lockout') || query.includes('tire') || query.includes('jump')) return pickRandom(responsePools.services);
+            if (query.includes('exotic') || query.includes('luxury') || query.includes('sport') || query.includes('mclaren') || query.includes('ferrari') || query.includes('lambo') || query.includes('porsche') || query.includes('corvette')) return pickRandom(responsePools.exotics);
+
+            // Contact / Action
+            if (query.includes('number') || query.includes('phone') || query.includes('call') || query.includes('contact')) return pickRandom(responsePools.contact);
+
+            // Fallback
+            return pickRandom(responsePools.fallback);
         };
 
         const handleSend = () => {
