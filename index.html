@@ -208,6 +208,32 @@
             <p>&copy; 2024 Luxurious Towing Michigan. All Rights Reserved.</p>
         </footer>
     </div>
+
+    <!-- AI Concierge -->
+    <div id="ai-concierge">
+        <button id="chatbot-trigger" class="glass" aria-label="Open AI Concierge">
+            <span class="bot-icon">✦</span>
+            <span class="pulse"></span>
+        </button>
+
+        <div id="chatbot-window" class="glass">
+            <div class="chatbot-header">
+                <h3>Signature Concierge</h3>
+                <button id="chatbot-close">&times;</button>
+            </div>
+            <div id="chatbot-messages">
+                <div class="message bot">
+                    Hello! I'm your Luxurious Towing concierge. How can I assist you with your recovery or transport
+                    today?
+                </div>
+            </div>
+            <div class="chatbot-input">
+                <input type="text" id="chatbot-input-field" placeholder="Ask about services, coverage...">
+                <button id="chatbot-send">Send</button>
+            </div>
+        </div>
+    </div>
+
     <script type="module" src="js/main.js"></script>
 </body>
 

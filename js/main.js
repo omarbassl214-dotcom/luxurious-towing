@@ -170,4 +170,70 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+    // AI Concierge Logic
+    const chatbotTrigger = document.getElementById('chatbot-trigger');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const chatbotClose = document.getElementById('chatbot-close');
+    const chatbotInput = document.getElementById('chatbot-input-field');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const chatbotMessages = document.getElementById('chatbot-messages');
+
+    if (chatbotTrigger && chatbotWindow) {
+        chatbotTrigger.addEventListener('click', () => {
+            chatbotWindow.classList.toggle('active');
+        });
+
+        chatbotClose.addEventListener('click', () => {
+            chatbotWindow.classList.remove('active');
+        });
+
+        const addMessage = (text, sender) => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.textContent = text;
+            chatbotMessages.appendChild(msgDiv);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        };
+
+        const generateResponse = (input) => {
+            const query = input.toLowerCase();
+
+            if (query.includes('mclaren') || query.includes('corvette') || query.includes('exotic') || query.includes('luxury')) {
+                return "We specialize in white-glove recovery for exotics. We use soft-strap tie-downs and low-clearance ramps to ensure your vehicle is treated with absolute care.";
+            }
+            if (query.includes('location') || query.includes('detroit') || query.includes('michigan') || query.includes('area')) {
+                return "We provide 24/7 premium recovery across the entire state of Michigan, with rapid dispatch in the Metro Detroit area.";
+            }
+            if (query.includes('price') || query.includes('cost') || query.includes('quote')) {
+                return "Our pricing is transparent and based on vehicle type and distance. You can use the 'Request Now' form in the contact section for a precise estimate.";
+            }
+            if (query.includes('services') || query.includes('towing') || query.includes('lockout')) {
+                return "We offer everything from emergency lockouts and jumpstarts to long-distance transport and heavy-duty recovery.";
+            }
+            if (query.includes('hello') || query.includes('hi')) {
+                return "Hello! How can the Luxurious Towing team assist you today?";
+            }
+
+            return "That's an excellent question. To give you the most accurate assistance, I recommend submitting a quick request through our form, or I can tell you more about our exotic vehicle specialization.";
+        };
+
+        const handleSend = () => {
+            const text = chatbotInput.value.trim();
+            if (text) {
+                addMessage(text, 'user');
+                chatbotInput.value = '';
+
+                // Simulate bot thinking
+                setTimeout(() => {
+                    const response = generateResponse(text);
+                    addMessage(response, 'bot');
+                }, 600);
+            }
+        };
+
+        chatbotSend.addEventListener('click', handleSend);
+        chatbotInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleSend();
+        });
+    }
 });
