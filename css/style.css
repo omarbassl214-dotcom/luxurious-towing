@@ -1054,91 +1054,23 @@ footer {
     }
 }
 
-body.menu-open {
-    overflow: hidden;
-}
-
-/* Performance optimizations for mobile */
-@media (max-width: 1024px) {
-
-    #plexus-canvas,
-    .global-bg-video,
-    #hero-canvas {
-        will-change: transform, opacity;
+@media (max-width: 768px) {
+    .logo-large {
+        font-size: 1.8rem;
+        letter-spacing: 2px;
     }
-}
 
-#hero-canvas {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    z-index: 1;
-}
+    /* Force hierarchy on mobile to prevent browser play button blockage */
+    .hero video {
+        z-index: -2 !important;
+    }
 
-#scroll-animation video {
-    pointer-events: none !important;
-}
+    .hero-overlay {
+        z-index: -1 !important;
+    }
 
-.video-shield {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 5;
-    background: transparent;
-    pointer-events: auto;
-    /* This captures the mouse so the video doesn't */
-}
-
-#scroll-animation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 85vh;
-    z-index: 0;
-    pointer-events: none;
-    /* Let the hero section above handle clicks */
-    overflow: hidden;
-    background: transparent !important;
-    opacity: 1;
-    /* Restored visibility */
-    transition: opacity 1s ease-in-out;
-}
-
-.video-scrub-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1;
-}
-
-#v0 {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    /* Sized to container */
-    height: 100%;
-    object-fit: cover;
-    opacity: 1;
-    /* Restored visibility */
-    pointer-events: none;
-    z-index: -1;
-}
-
-.hero-content {
-    position: relative;
-    z-index: 10;
-    pointer-events: auto;
-}
-
-.hero-overlay {
-    z-index: 5;
+    #plexus-canvas {
+        z-index: -1 !important;
+        /* Move above video but below content */
+    }
 }
