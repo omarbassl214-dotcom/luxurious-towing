@@ -898,87 +898,93 @@ footer {
 
     .hero {
         height: auto;
-        min-height: 100vh;
-        padding-top: 80px;
+        min-height: 85vh;
+        /* Prevent overly tall hero on mobile */
+        padding-top: 100px;
+        padding-bottom: 2rem;
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
 
     .hero h1 {
-        font-size: 2.2rem;
-        margin-bottom: 0.5rem;
+        font-size: 2.5rem;
+        /* Scaled for readability */
+        margin-bottom: 1rem;
+        line-height: 1.2;
     }
 
     .hero h1 span {
-        font-size: 2.8rem;
+        font-size: 3rem;
     }
 
     .logo-large {
-        font-size: 1.8rem;
-        letter-spacing: 2px;
+        font-size: 2rem;
     }
 
     .hero p {
         font-size: 1rem;
-        margin-bottom: 1.5rem;
+        margin-bottom: 2rem;
         padding: 0 5%;
     }
 
     .hero-btns {
         flex-direction: column;
         width: 100%;
-        max-width: 280px;
+        max-width: 300px;
         margin: 0 auto;
-        gap: 12px;
+        gap: 15px;
     }
 
+    /* Tighter Section Spacing */
+    .feature-bridge,
+    .our-work,
+    .services,
+    .contact-section {
+        padding: 3rem 5%;
+        /* Reduced from 5rem */
+    }
+
+    .section-header {
+        margin-bottom: 2.5rem;
+    }
+
+    .section-header h2,
+    .services h2,
+    .contact-info h2 {
+        font-size: 2.2rem;
+        /* Scaled down heading */
+    }
+
+    /* Bridge Scroll */
     .bridge-container {
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         gap: 1.5rem;
-        padding: 0 10%;
+        padding-bottom: 1rem;
+        /* Space for scroll */
         scroll-behavior: smooth;
-        -ms-overflow-style: none;
-        /* Hide scrollbar IE/Edge */
         scrollbar-width: none;
-        /* Hide scrollbar Firefox */
     }
 
     .bridge-container::-webkit-scrollbar {
         display: none;
-        /* Hide scrollbar Chrome/Safari */
     }
 
     .bridge-item {
         flex: 0 0 85%;
         scroll-snap-align: center;
-        padding: 2.5rem 1.5rem;
+        padding: 2rem;
     }
 
-    .bridge-item h3 {
-        font-size: 1.2rem;
-    }
-
-    .bridge-item p {
-        font-size: 0.9rem;
-    }
-
-    .bridge-item:last-child:nth-child(odd) {
-        grid-column: auto;
-    }
-
-    /* Swipe Gallery for "Our Work" */
+    /* Work Gallery Scroll */
     .work-grid {
         display: flex;
         overflow-x: auto;
         scroll-snap-type: x mandatory;
         gap: 1.5rem;
-        padding: 0 10%;
-        scroll-behavior: smooth;
-        column-count: auto;
-        -ms-overflow-style: none;
+        padding-bottom: 1rem;
         scrollbar-width: none;
     }
 
@@ -987,61 +993,49 @@ footer {
     }
 
     .work-item {
-        flex: 0 0 85%;
+        flex: 0 0 90%;
+        /* Show slightly more of the next item */
         scroll-snap-align: center;
         aspect-ratio: 1 / 1;
-        /* Match PC version's square aesthetic */
         height: auto;
-        margin-bottom: 0;
-        display: block;
-        /* Reset from inline-block */
     }
 
-    .work-item img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-    }
-
+    /* Service Grid - 1 Col for better readability */
     .service-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
     }
 
     .service-card {
-        padding: 1.5rem 1rem;
-        cursor: pointer;
-        transition: transform 0.3s ease, background 0.3s ease;
+        padding: 2rem;
     }
 
-    .service-card p {
-        max-height: 0;
-        opacity: 0;
-        overflow: hidden;
-        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-        font-size: 0.8rem;
-        margin-top: 0;
-    }
-
-    .service-card.expanded p {
-        max-height: 200px;
-        opacity: 1;
-        margin-top: 1rem;
-    }
-
-    .service-card.expanded {
-        background: rgba(192, 142, 123, 0.1);
-        border-color: var(--primary-color);
-        grid-column: span 2;
-    }
-
+    /* Contact Form */
     .contact-container {
         grid-template-columns: 1fr;
-        padding: 2rem 1.5rem;
+        padding: 2rem;
+        gap: 2rem;
     }
 
-    .contact-info h2 {
-        font-size: 2rem;
+    /* Prevent iOS Zoom on inputs */
+    input,
+    select,
+    textarea {
+        font-size: 16px !important;
+    }
+
+    /* Chatbot Mobile */
+    #ai-concierge {
+        bottom: 20px;
+        right: 20px;
+    }
+
+    #chatbot-window {
+        width: calc(100vw - 40px);
+        height: 60vh;
+        bottom: 80px;
+        /* Above the trigger */
+        right: 0;
     }
 
     .glass-nav {
