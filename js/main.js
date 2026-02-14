@@ -148,4 +148,26 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
+
+    // Service Cards Tap-to-Expand (Mobile only optimization)
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach(card => {
+        card.addEventListener('click', function (e) {
+            if (window.innerWidth <= 768) {
+                // If there's an already expanded card, close it (optional accordion effect)
+                serviceCards.forEach(c => {
+                    if (c !== card) c.classList.remove('expanded');
+                });
+
+                this.classList.toggle('expanded');
+
+                // Scroll into view if expanded
+                if (this.classList.contains('expanded')) {
+                    setTimeout(() => {
+                        this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }, 300);
+                }
+            }
+        });
+    });
 });
