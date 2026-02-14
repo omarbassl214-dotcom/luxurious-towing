@@ -1127,3 +1127,38 @@ body.menu-open {
 .hero-overlay {
     z-index: 5;
 }
+
+/* MOBILE FIXES */
+@media (max-width: 768px) {
+
+    /* Fix for "White Bar" at bottom and Address bar gaps */
+    html,
+    body {
+        background-color: #0c0c0c !important;
+        /* Force dark background */
+        min-height: 100dvh;
+        /* Dynamic Viewport Height */
+        overscroll-behavior-y: none;
+        /* Prevent bounce */
+    }
+
+    /* Prevent Input Zoom on iOS */
+    input,
+    select,
+    textarea,
+    #chatbot-input-field {
+        font-size: 16px !important;
+    }
+
+    /* Adjust Chatbot for mobile keyboards */
+    #chatbot-window {
+        height: 50dvh;
+        /* Dynamic height */
+        bottom: 80px;
+    }
+
+    .hero {
+        min-height: 100dvh;
+        /* Adapt to address bar */
+    }
+}
