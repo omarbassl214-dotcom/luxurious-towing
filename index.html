@@ -161,6 +161,18 @@
                     <h2>Request Special Assistance</h2>
                     <p>Fill out the form below. We'll prioritize your recovery based on location and vehicle type.
                     </p>
+                    <!-- Quick Pin Feature -->
+                    <div id="quick-pin" class="quick-pin-card">
+                        <div class="pin-visual">
+                            <div class="radar-pulse"></div>
+                            <span class="pin-icon">📍</span>
+                        </div>
+                        <div class="pin-content">
+                            <h4>Fast-Track Location</h4>
+                            <p>Tap to secure your GPS coordinates for immediate dispatch.</p>
+                            <span id="pin-status" class="status-badge">Ready to Pin</span>
+                        </div>
+                    </div>
                 </div>
                 <form id="tow-form">
                     <div class="input-group">
@@ -181,12 +193,8 @@
                     </div>
                     <div class="input-group">
                         <label for="address">Pickup Address</label>
-                        <div class="input-with-action">
-                            <input type="text" id="address" required placeholder="Enter pickup location">
-                            <button type="button" id="get-location" class="action-btn" title="Pin My Location">
-                                📍
-                            </button>
-                        </div>
+                        <input type="text" id="address" required
+                            placeholder="Enter pickup location (or use Quick Pin above)">
                         <div id="map-preview" class="map-container hidden"></div>
                         <span id="location-hint" class="hint">Checking coverage area...</span>
                     </div>

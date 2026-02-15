@@ -1,7 +1,7 @@
 // Luxurious Towing - Final Robust Main Script
 (function () {
     function init() {
-        // 1. Splash Screen Control (Runs first)
+        // 1. Splash Screen Control
         const splash = document.getElementById('splash-screen');
         if (splash) {
             setTimeout(() => {
@@ -15,7 +15,8 @@
         const addressInput = document.querySelector('#address');
         const locationHint = document.querySelector('#location-hint');
         const priceNotice = document.querySelector('#price-notice');
-        const locationBtn = document.getElementById('get-location');
+        const quickPin = document.getElementById('quick-pin');
+        const pinStatus = document.getElementById('pin-status');
         const mapPreview = document.getElementById('map-preview');
 
         if (form && addressInput) {
@@ -45,6 +46,7 @@
                     btn.style.background = "#4CAF50";
                     form.reset();
                     if (mapPreview) mapPreview.classList.add('hidden');
+                    if (pinStatus) pinStatus.textContent = "Ready to Pin";
                     setTimeout(() => {
                         btn.textContent = originalText;
                         btn.disabled = false;
@@ -53,34 +55,42 @@
                 }, 1500);
             });
 
-            if (locationBtn) {
-                locationBtn.addEventListener('click', () => {
+            if (quickPin) {
+                quickPin.addEventListener('click', () => {
                     if (navigator.geolocation) {
-                        locationBtn.innerHTML = '⌛';
+                        if (pinStatus) {
+                            pinStatus.textContent = "⌛ Securing...";
+                            pinStatus.style.borderColor = "var(--primary-color)";
+                        }
+
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
                                 const lat = pos.coords.latitude.toFixed(6);
                                 const lon = pos.coords.longitude.toFixed(6);
-                                // Generate Direct Google Maps Link
                                 addressInput.value = `https://www.google.com/maps?q=${lat},${lon}`;
+
+                                if (pinStatus) {
+                                    pinStatus.textContent = "✅ Secured";
+                                    pinStatus.style.background = "rgba(76, 175, 80, 0.1)";
+                                    pinStatus.style.color = "#4CAF50";
+                                }
 
                                 if (mapPreview) {
                                     mapPreview.classList.remove('hidden');
                                     mapPreview.classList.add('active');
                                     mapPreview.innerHTML = `
                                         <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); border-radius: 8px;">
-                                            <span style="font-size: 1.5rem; margin-bottom: 5px;">📍</span>
-                                            <span style="font-size: 0.8rem; color: var(--primary-color); letter-spacing: 1px; font-weight: bold;">GOOGLE MAPS LINK SECURED</span>
-                                            <span style="font-size: 0.7rem; opacity: 0.7; margin-top: 5px;">Ready for Dispatch</span>
+                                            <span style="font-size: 1.2rem; margin-bottom: 5px;">📍</span>
+                                            <span style="font-size: 0.75rem; color: var(--primary-color); letter-spacing: 1px; font-weight: bold;">DISPATCH LINK READY</span>
                                         </div>`;
                                 }
-                                locationBtn.innerHTML = '✅';
                             },
-                            () => { locationBtn.innerHTML = '❌'; alert('Please enable location access in your browser.'); },
+                            () => {
+                                if (pinStatus) pinStatus.textContent = "❌ Failed";
+                                alert('Please enable location access to use Quick Pin.');
+                            },
                             { enableHighAccuracy: true, timeout: 5000 }
                         );
-                    } else {
-                        alert('Your browser does not support geolocation.');
                     }
                 });
             }
@@ -108,10 +118,9 @@
 
             const generateResponse = (q) => {
                 q = q.toLowerCase();
-                if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. For exotics, use our form for a custom quote.";
+                if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. Use the form for a custom quote.";
                 if (q.includes('location') || q.includes('area')) return "We serve all of Michigan, with 24/7 service in Metro Detroit.";
-                if (q.includes('exotic') || q.includes('luxury')) return "We use zero-degree flatbeds for low-clearance supercars.";
-                return "I'm the Luxurious Towing Concierge. How can I assist with your recovery today?";
+                return "I'm the Luxurious Towing Concierge. How can I assist you today?";
             };
 
             const send = () => {
@@ -127,7 +136,7 @@
             if (input) input.addEventListener('keypress', (e) => { if (e.key === 'Enter') send(); });
         }
 
-        // 4. UI General
+        // 4. General UX
         document.querySelectorAll('a[href^="#"]').forEach(a => {
             a.addEventListener('click', (e) => {
                 e.preventDefault();
