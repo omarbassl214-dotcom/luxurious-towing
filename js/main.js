@@ -10,21 +10,14 @@
             }, 2000);
         }
 
-        // 2. Elements Check
+        // 2. Form & Elements
         const form = document.querySelector('#tow-form');
         const addressInput = document.querySelector('#address');
         const locationHint = document.querySelector('#location-hint');
-        const priceNotice = document.querySelector('#price-notice');
-        const nationalNotice = document.getElementById('national-notice'); // NEW
         const quickPin = document.getElementById('quick-pin');
         const pinStatus = document.getElementById('pin-status');
         const mapPreview = document.getElementById('map-preview');
-
-        // Helper: Michigan Geofence Check
-        // Approx Box: Lat 41.6 to 48.3, Lon -90.5 to -82.3
-        const isMichigan = (lat, lon) => {
-            return (lat >= 41.6 && lat <= 48.3) && (lon >= -90.5 && lon <= -82.3);
-        };
+        // Notice elements are removed as per request
 
         if (form && addressInput) {
             // Auto-select text on click
@@ -34,67 +27,16 @@
                 }
             });
 
-            const setLocationState = (isGreen, message) => {
-                locationHint.textContent = message;
-                locationHint.style.color = isGreen ? "#4CAF50" : "#ff4444";
-
-                addressInput.style.borderColor = isGreen ? "#4CAF50" : "#ff4444";
-                addressInput.style.backgroundColor = isGreen ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 68, 68, 0.1)";
-
-                if (isGreen) {
-                    if (nationalNotice) nationalNotice.classList.add('hidden');
-                    if (priceNotice) priceNotice.classList.add('hidden'); // Ensure yellow is gone
-                } else {
-                    if (nationalNotice) nationalNotice.classList.remove('hidden');
-                    if (priceNotice) priceNotice.classList.add('hidden'); // Prioritize Red over Yellow
-                }
-            };
-
+            // Simple Input Handler (No Geofencing)
             addressInput.addEventListener('input', (e) => {
-                const value = e.target.value.toLowerCase();
-
-                // Reset styling if empty
-                if (value.length < 3) {
-                    addressInput.style.borderColor = "";
-                    addressInput.style.backgroundColor = "";
-                    locationHint.textContent = "";
-                    if (nationalNotice) nationalNotice.classList.add('hidden');
-                    return;
+                const value = e.target.value;
+                if (value.length > 3) {
+                    // Optional: Just show a generic "Locating..." or clear hint
+                    if (locationHint) locationHint.textContent = "✓ Address detected";
+                    if (locationHint) locationHint.style.color = "#4CAF50";
+                } else {
+                    if (locationHint) locationHint.textContent = "";
                 }
-
-                locationHint.textContent = "Checking coverage...";
-                locationHint.style.color = "#d4af37";
-
-                setTimeout(() => {
-                    // 1. Check if input is Coordinates (Math Check)
-                    const coords = value.split(',').map(n => parseFloat(n.trim()));
-                    if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
-                        const [lat, lon] = coords;
-                        if (isMichigan(lat, lon)) {
-                            setLocationState(true, "✓ In standard coverage area");
-                        } else {
-                            setLocationState(false, "⚠️ National Transport Zone");
-                        }
-                        return;
-                    }
-
-                    // 2. Keyword Checks (Text Address)
-                    // Strict "Green" Keywords (Michigan Cities/generic)
-                    const isLocal = value.includes('detroit') || value.includes('michigan') || value.includes('mi') || value.includes('48') || value.includes('grand rapids') || value.includes('lansing') || value.includes('ann arbor');
-
-                    // Strict "Red" Keywords (Other States)
-                    const outOfStateKeywords = ['ohio', 'indiana', 'illinois', 'chicago', 'toledo', 'florida', 'texas', 'california', 'ny', 'york', 'usa', 'united states'];
-                    const isOutOfState = outOfStateKeywords.some(keyword => value.includes(keyword));
-
-                    if (isOutOfState) {
-                        setLocationState(false, "⚠️ National Transport Zone");
-                    } else if (isLocal) {
-                        setLocationState(true, "✓ In standard coverage area");
-                    } else {
-                        // Default to Green for ambiguous "nearby" text, unless explicit Out of State
-                        setLocationState(true, "✓ Coverage confirmed");
-                    }
-                }, 500);
             });
 
             form.addEventListener('submit', (e) => {
@@ -103,14 +45,14 @@
                 const originalText = btn.textContent;
                 btn.textContent = "Dispatching...";
                 btn.disabled = true;
+
+                // Simulate Dispatch
                 setTimeout(() => {
                     alert(`Request received! A dispatch team has been notified.`);
                     btn.textContent = "Request Sent";
                     btn.style.background = "#4CAF50";
                     form.reset();
-                    // Reset Styles
-                    addressInput.style.borderColor = "";
-                    addressInput.style.backgroundColor = "";
+
                     if (mapPreview) {
                         mapPreview.classList.add('hidden');
                         mapPreview.innerHTML = '';
@@ -120,8 +62,6 @@
                         pinStatus.style.background = "";
                         pinStatus.style.color = "";
                     }
-                    if (nationalNotice) nationalNotice.classList.add('hidden');
-                    if (priceNotice) priceNotice.classList.add('hidden');
 
                     setTimeout(() => {
                         btn.textContent = originalText;
@@ -131,11 +71,12 @@
                 }, 1500);
             });
 
+            // Quick Pin - Just gets coordinates, no validation
             if (quickPin) {
                 quickPin.addEventListener('click', () => {
                     if (navigator.geolocation) {
                         if (pinStatus) {
-                            pinStatus.textContent = "⌛ Securing...";
+                            pinStatus.textContent = "⌛ Locating...";
                         }
 
                         navigator.geolocation.getCurrentPosition(
@@ -146,34 +87,27 @@
 
                                 addressInput.value = `${lat}, ${lon}`;
 
-                                // GEOFENCE CHECK
-                                const inState = isMichigan(lat, lon);
-
-                                if (inState) {
-                                    setLocationState(true, "✓ In standard coverage area");
-                                } else {
-                                    setLocationState(false, "⚠️ National Transport Zone");
+                                if (pinStatus) {
+                                    pinStatus.textContent = "✅ Location Secured";
+                                    pinStatus.style.background = "rgba(76, 175, 80, 0.1)";
+                                    pinStatus.style.color = "#4CAF50";
                                 }
 
-                                if (pinStatus) {
-                                    pinStatus.textContent = inState ? "✅ Simply Secured" : "⚠️ Out of Area";
-                                    pinStatus.style.background = inState ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 68, 68, 0.1)";
-                                    pinStatus.style.color = inState ? "#4CAF50" : "#ff4444";
+                                if (locationHint) {
+                                    locationHint.textContent = "✓ GPS Coordinates Secured";
+                                    locationHint.style.color = "#4CAF50";
                                 }
 
                                 if (mapPreview) {
                                     mapPreview.classList.remove('hidden');
                                     mapPreview.classList.add('active');
-                                    const stateText = inState ? "MICHIGAN DETECTED" : "OUT OF STATE";
-                                    const stateColor = inState ? "var(--primary-color)" : "#ff4444";
 
                                     mapPreview.innerHTML = `
-                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(0, 0, 0, 0.8); border: 1px solid ${stateColor}; border-radius: 8px; cursor: pointer;">
+                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(0, 0, 0, 0.8); border: 1px solid var(--primary-color); border-radius: 8px; cursor: pointer;">
                                             <span style="font-size: 1.2rem; margin-bottom: 8px;">📍</span>
-                                            <a href="${gMapsUrl}" target="_blank" style="color: ${stateColor}; text-decoration: none; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
+                                            <a href="${gMapsUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
                                                 OPEN IN MAPS ↗
                                             </a>
-                                            <span style="font-size: 0.6rem; color: ${stateColor}; margin-top: 5px; font-weight:bold;">${stateText}</span>
                                         </div>`;
 
                                     mapPreview.onclick = (e) => {
@@ -215,7 +149,7 @@
             const generateResponse = (q) => {
                 q = q.toLowerCase();
                 if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. For exotics, use our form for a custom quote.";
-                if (q.includes('location') || q.includes('area')) return "We are based in Michigan but offer nationwide transport for all vehicle types.";
+                if (q.includes('location') || q.includes('area')) return "We offer nationwide covered transport for all vehicle types.";
                 return "I'm the Luxurious Towing Concierge. How can I assist you today?";
             };
 
