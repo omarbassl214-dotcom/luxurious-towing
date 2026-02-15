@@ -184,6 +184,19 @@
                         <input type="tel" id="phone" required placeholder="(313) 555-0123">
                     </div>
                     <div class="input-group">
+                        <label for="service-type">Service Required</label>
+                        <select id="service-type" required>
+                            <option value="" disabled selected>Select Service...</option>
+                            <option value="standard">Standard Towing (Flatbed/Wheel-Lift)</option>
+                            <option value="exotic">💎 Exotic Vehicle Transport</option>
+                            <option value="enclosed">🛡️ Enclosed Trailer Service</option>
+                            <option value="roadside">⚡ Roadside Assistance (Jump/Tire/Fuel)</option>
+                            <option value="winch">🪝 Winch-Out / Recovery</option>
+                            <option value="long-distance">🛣️ Long-Distance Hauling</option>
+                            <option value="motorcycle">🏍️ Motorcycle Transport</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
                         <label for="vehicle-type">Vehicle Type</label>
                         <select id="vehicle-type" required>
                             <option value="standard">Standard (Sedan, SUV, Truck)</option>
