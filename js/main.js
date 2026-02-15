@@ -1,303 +1,236 @@
-// ---------------------------------------------------------
-// 1. SPLASH SCREEN (Must run first to avoid freeze)
-// ---------------------------------------------------------
-const splash = document.getElementById('splash-screen');
-if (splash) {
-    setTimeout(() => {
-        splash.style.opacity = '0';
+document.addEventListener('DOMContentLoaded', () => {
+    // ---------------------------------------------------------
+    // 1. SPLASH SCREEN (Must run first)
+    // ---------------------------------------------------------
+    const splash = document.getElementById('splash-screen');
+    if (splash) {
         setTimeout(() => {
-            splash.style.display = 'none';
-        }, 500);
-    }, 2000);
-}
-
-const form = document.querySelector('#tow-form');
-const addressInput = document.querySelector('#address');
-const locationHint = document.querySelector('#location-hint');
-const priceNotice = document.querySelector('#price-notice');
-
-// Skip form logic if elements missing, but DON'T block the rest of the script
-if (form && addressInput) {
-
-    // Simulate location checking
-    addressInput.addEventListener('input', (e) => {
-        const value = e.target.value.toLowerCase();
-        if (value.length > 5) {
-            locationHint.textContent = "Checking coverage...";
-            locationHint.style.color = "#d4af37";
+            splash.style.opacity = '0';
             setTimeout(() => {
-                const isLocal = value.includes('detroit') ||
-                    value.includes('ann arbor') ||
-                    value.includes('mi') ||
-                    value.includes('michigan') ||
-                    value.includes('grand rapids');
-                if (isLocal) {
-                    locationHint.textContent = "✓ In standard coverage area";
-                    locationHint.style.color = "#4CAF50";
-                    priceNotice.classList.add('hidden');
-                } else {
-                    locationHint.textContent = "Outside standard zone";
-                    locationHint.style.color = "#ff4444";
-                    priceNotice.classList.remove('hidden');
-                }
+                splash.style.display = 'none';
             }, 500);
-        } else {
-            locationHint.textContent = "Checking coverage area...";
-            locationHint.style.color = "rgba(255,255,255,0.5)";
-            priceNotice.classList.add('hidden');
-        }
-    });
+        }, 2000);
+    }
 
-    form.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const btn = form.querySelector('button');
-        const originalText = btn.textContent;
-        const vehicleType = document.querySelector('#vehicle-type').value;
-        const typeLabel = vehicleType.charAt(0).toUpperCase() + vehicleType.slice(1);
-        btn.textContent = "Dispatching...";
-        btn.disabled = true;
-        setTimeout(() => {
-            alert(`Request Received for ${typeLabel} Towing! A dispatch team has been notified.`);
-            btn.textContent = "Request Sent";
-            btn.style.background = "#4CAF50";
-            btn.style.color = "#fff";
-            form.reset();
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.disabled = false;
-                btn.style.background = "";
-                btn.style.color = "";
-            }, 3000);
-        }, 1500);
-    });
-} // End form safety check
+    // ---------------------------------------------------------
+    // 2. FORM & GEOLOCATION
+    // ---------------------------------------------------------
+    const form = document.querySelector('#tow-form');
+    const addressInput = document.querySelector('#address');
+    const locationHint = document.querySelector('#location-hint');
+    const priceNotice = document.querySelector('#price-notice');
+    const locationBtn = document.getElementById('get-location');
+    const mapPreview = document.getElementById('map-preview');
 
-// Smooth Scroll for Anchors
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        document.querySelector(this.getAttribute('href')).scrollIntoView({
-            behavior: 'smooth'
+    if (form && addressInput) {
+        // Simulate location checking
+        addressInput.addEventListener('input', (e) => {
+            const value = e.target.value.toLowerCase();
+            if (value.length > 5) {
+                locationHint.textContent = "Checking coverage...";
+                locationHint.style.color = "#d4af37";
+                setTimeout(() => {
+                    const isLocal = value.includes('detroit') ||
+                        value.includes('ann arbor') ||
+                        value.includes('mi') ||
+                        value.includes('michigan') ||
+                        value.includes('grand rapids');
+                    if (isLocal) {
+                        locationHint.textContent = "✓ In standard coverage area";
+                        locationHint.style.color = "#4CAF50";
+                        priceNotice.classList.add('hidden');
+                    } else {
+                        locationHint.textContent = "Outside standard zone";
+                        locationHint.style.color = "#ff4444";
+                        priceNotice.classList.remove('hidden');
+                    }
+                }, 500);
+            } else {
+                locationHint.textContent = "Checking coverage area...";
+                locationHint.style.color = "rgba(255,255,255,0.5)";
+                priceNotice.classList.add('hidden');
+            }
         });
-    });
-});
 
-// Navbar scroll effect
-window.addEventListener('scroll', () => {
-    const nav = document.querySelector('.glass-nav');
-    if (nav) {
-        if (window.scrollY > 50) {
-            nav.style.background = 'rgba(5, 5, 5, 0.95)';
-        } else {
-            nav.style.background = 'rgba(5, 5, 5, 0.8)';
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = form.querySelector('button');
+            const originalText = btn.textContent;
+            const vehicleType = document.querySelector('#vehicle-type').value;
+            const typeLabel = vehicleType.charAt(0).toUpperCase() + vehicleType.slice(1);
+            btn.textContent = "Dispatching...";
+            btn.disabled = true;
+            setTimeout(() => {
+                alert(`Request Received for ${typeLabel} Towing! A dispatch team has been notified.`);
+                btn.textContent = "Request Sent";
+                btn.style.background = "#4CAF50";
+                btn.style.color = "#fff";
+                form.reset();
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    btn.style.background = "";
+                    btn.style.color = "";
+                }, 3000);
+            }, 1500);
+        });
+
+        // Geolocation Logic
+        if (locationBtn) {
+            locationBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    locationBtn.innerHTML = '⌛';
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const lat = position.coords.latitude;
+                            const lon = position.coords.longitude;
+                            addressInput.value = `Pinned: [${lat.toFixed(6)}, ${lon.toFixed(6)}]`;
+
+                            if (mapPreview) {
+                                mapPreview.classList.remove('hidden');
+                                mapPreview.classList.add('active');
+                                mapPreview.innerHTML = `
+                                    <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); color: var(--primary-color);">
+                                        <span style="font-size: 2rem; margin-bottom: 10px;">📍</span>
+                                        <span style="font-size: 0.8rem; letter-spacing: 1px;">COORDINATES LOCKED</span>
+                                        <span style="font-size: 0.7rem; opacity: 0.6; margin-top: 5px;">${lat.toFixed(4)}, ${lon.toFixed(4)}</span>
+                                    </div>
+                                `;
+                            }
+                            locationBtn.innerHTML = '✅';
+                        },
+                        (error) => {
+                            console.error('Geolocation Error:', error);
+                            locationBtn.innerHTML = '❌';
+                            alert('Unable to retrieve location. Please type your address manually.');
+                        },
+                        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                    );
+                } else {
+                    alert('Geolocation is not supported by your browser.');
+                }
+            });
         }
     }
-});
 
-// VIDEO HERO LOGIC (Simple Autoplay/Loop)
-const vid = document.getElementById('v0');
-if (vid) {
-    vid.style.opacity = '1';
-    vid.play().catch(e => console.log("Auto-play blocked:", e));
-}
-
-// Mobile Menu Toggle logic
-const menuToggle = document.querySelector('.mobile-menu-toggle');
-const menuOverlay = document.querySelector('.mobile-menu-overlay');
-const menuLinks = document.querySelectorAll('.mobile-links a');
-
-if (menuToggle && menuOverlay) {
-    menuToggle.addEventListener('click', () => {
-        menuToggle.classList.toggle('active');
-        menuOverlay.classList.toggle('active');
-        document.body.style.overflow = menuOverlay.classList.contains('active') ? 'hidden' : '';
-    });
-
-    menuLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            menuToggle.classList.remove('active');
-            menuOverlay.classList.remove('active');
-            document.body.style.overflow = '';
+    // ---------------------------------------------------------
+    // 3. UI & ANIMATIONS
+    // ---------------------------------------------------------
+    // Smooth Scroll
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
         });
     });
-}
 
-// Service Cards Tap-to-Expand (Mobile only optimization)
-const serviceCards = document.querySelectorAll('.service-card');
-serviceCards.forEach(card => {
-    card.addEventListener('click', function (e) {
-        if (window.innerWidth <= 768) {
-            // If there's an already expanded card, close it (optional accordion effect)
-            serviceCards.forEach(c => {
-                if (c !== card) c.classList.remove('expanded');
+    // Navbar scroll effect
+    window.addEventListener('scroll', () => {
+        const nav = document.querySelector('.glass-nav');
+        if (nav) {
+            nav.style.background = window.scrollY > 50 ? 'rgba(5, 5, 5, 0.95)' : 'rgba(5, 5, 5, 0.8)';
+        }
+    });
+
+    // Video Hero
+    const vid = document.getElementById('v0');
+    if (vid) {
+        vid.play().catch(e => console.log("Auto-play blocked:", e));
+    }
+
+    // Mobile Menu
+    const menuToggle = document.querySelector('.mobile-menu-toggle');
+    const menuOverlay = document.querySelector('.mobile-menu-overlay');
+    const menuLinks = document.querySelectorAll('.mobile-links a');
+
+    if (menuToggle && menuOverlay) {
+        menuToggle.addEventListener('click', () => {
+            menuToggle.classList.toggle('active');
+            menuOverlay.classList.toggle('active');
+            document.body.style.overflow = menuOverlay.classList.contains('active') ? 'hidden' : '';
+        });
+
+        menuLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                menuToggle.classList.remove('active');
+                menuOverlay.classList.remove('active');
+                document.body.style.overflow = '';
             });
+        });
+    }
 
-            this.classList.toggle('expanded');
-
-            // Scroll into view if expanded
-            if (this.classList.contains('expanded')) {
-                setTimeout(() => {
-                    this.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }, 300);
+    // Service Cards
+    const serviceCards = document.querySelectorAll('.service-card');
+    serviceCards.forEach(card => {
+        card.addEventListener('click', function () {
+            if (window.innerWidth <= 768) {
+                serviceCards.forEach(c => { if (c !== card) c.classList.remove('expanded'); });
+                this.classList.toggle('expanded');
+                if (this.classList.contains('expanded')) {
+                    setTimeout(() => { this.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 300);
+                }
             }
-        }
-    });
-});
-// AI Concierge Logic
-const chatbotTrigger = document.getElementById('chatbot-trigger');
-const chatbotWindow = document.getElementById('chatbot-window');
-const chatbotClose = document.getElementById('chatbot-close');
-const chatbotInput = document.getElementById('chatbot-input-field');
-const chatbotSend = document.getElementById('chatbot-send');
-const chatbotMessages = document.getElementById('chatbot-messages');
-
-// Geolocation Drop-in Feature
-const locationBtn = document.getElementById('get-location');
-const mapPreview = document.getElementById('map-preview');
-
-if (locationBtn) {
-    locationBtn.addEventListener('click', () => {
-        if (navigator.geolocation) {
-            locationBtn.innerHTML = '⌛'; // Loading state
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lon = position.coords.longitude;
-
-                    // Set the address field to show "Pinned Location"
-                    addressInput.value = `Pinned: [${lat.toFixed(6)}, ${lon.toFixed(6)}]`;
-
-                    // Show Map Preview (using a static Google Maps or similar placeholder for now)
-                    // Note: For a real production map, you'd use a Leaflet or Google Maps API key
-                    mapPreview.classList.remove('hidden');
-                    mapPreview.classList.add('active');
-                    mapPreview.innerHTML = `
-                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); color: var(--primary-color);">
-                                <span style="font-size: 2rem; margin-bottom: 10px;">📍</span>
-                                <span style="font-size: 0.8rem; letter-spacing: 1px;">COORDINATES LOCKED</span>
-                                <span style="font-size: 0.7rem; opacity: 0.6; margin-top: 5px;">${lat.toFixed(4)}, ${lon.toFixed(4)}</span>
-                            </div>
-                        `;
-
-                    locationBtn.innerHTML = '✅';
-                },
-                (error) => {
-                    console.error('Geolocation Error:', error);
-                    locationBtn.innerHTML = '❌';
-                    alert('Unable to retrieve location. Please type your address manually.');
-                },
-                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-            );
-        } else {
-            alert('Geolocation is not supported by your browser.');
-        }
-    });
-}
-
-if (chatbotTrigger && chatbotWindow) {
-    chatbotTrigger.addEventListener('click', () => {
-        chatbotWindow.classList.toggle('active');
+        });
     });
 
-    chatbotClose.addEventListener('click', () => {
-        chatbotWindow.classList.remove('active');
-    });
+    // ---------------------------------------------------------
+    // 4. AI CONCIERGE
+    // ---------------------------------------------------------
+    const chatbotTrigger = document.getElementById('chatbot-trigger');
+    const chatbotWindow = document.getElementById('chatbot-window');
+    const chatbotClose = document.getElementById('chatbot-close');
+    const chatbotInput = document.getElementById('chatbot-input-field');
+    const chatbotSend = document.getElementById('chatbot-send');
+    const chatbotMessages = document.getElementById('chatbot-messages');
 
-    const addMessage = (text, sender) => {
-        const msgDiv = document.createElement('div');
-        msgDiv.className = `message ${sender}`;
-        msgDiv.textContent = text;
-        chatbotMessages.appendChild(msgDiv);
-        chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
-    };
+    if (chatbotTrigger && chatbotWindow) {
+        chatbotTrigger.addEventListener('click', () => chatbotWindow.classList.toggle('active'));
+        chatbotClose.addEventListener('click', () => chatbotWindow.classList.remove('active'));
 
-    const responsePools = {
-        greetings: [
-            "Hello! I'm the Luxurious Towing Concierge. How can I assist you with your vehicle today?",
-            "Hi there! I'm here to ensure your recovery experience is seamless. What can I do for you?",
-            "Greetings. I'm at your service. Are you looking for a quote, or do you have a question about our fleet?"
-        ],
-        status: [
-            "I'm fully operational and ready to assist! The team is currently on standby for dispatch.",
-            "I'm doing excellent, thank thank you. My priority right now is helping you. How can I be of service?"
-        ],
-        identity: [
-            "I am the Signature Concierge for Luxurious Towing—an AI specialist trained to assist with efficient, high-end vehicle recovery.",
-            "I'm your virtual assistant here at Luxurious Towing. I can help with quotes, service details, and dispatch information."
-        ],
-        capabilities: [
-            "I can provide instant quotes, explain our 'White Glove' recovery process for exotics, or check our coverage in your area.",
-            "I'm here to help you schedule a tow, understand our pricing, or learn more about how we handle luxury vehicles like Ferraris and McLarens."
-        ],
-        exotics: [
-            "We specialize in high-value assets. Our fleet uses zero-degree flatbeds and soft-strap tie-downs to ensure your McLaren, Ferrari, or Corvette is transported without a scratch.",
-            "Exotic recovery is our craft. We understand the precision required for low-clearance vehicles and use only the most advanced equipment."
-        ],
-        location: [
-            "We proudly serve the entire state of Michigan, with rapid response units stationed throughout Metro Detroit and Southeast Michigan.",
-            "Our headquarters is in Detroit, but our premium network covers every corner of Michigan for long-distance and local transport."
-        ],
-        pricing: [
-            "For a standard local tow, pricing typically starts around $95–$150. For exotics or long-distance, we provide custom quotes to ensure fairness.",
-            "Pricing varies based on vehicle type and distance. A standard hook-up is generally $125 + mileage. I can give you a precise quote if you use the 'Request Now' form!"
-        ],
-        services: [
-            "We offer a full suite of services: Emergency Recovery, Exotic Transport, Lockouts, Jumpstarts, and Heavy-Duty Hauling.",
-            "From a simple tire change to a complex accident recovery for a luxury SUV, our team handles it all with white-glove care."
-        ],
-        contact: [
-            "The fastest way to get a truck to you is by filling out the 'Request Now' form above, or calling our dispatch line directly.",
-            "I recommend clicking 'Request Now' for immediate dispatch. It sends your location directly to our drivers."
-        ],
-        fallback: [
-            "That's a great question. While I'm an expert on our towing services, I might need a bit more detail. Are you asking about pricing, location, or a specific vehicle?",
-            "I want to make sure I give you the right answer. Could you rephrase that? You can ask me about 'Cost', 'Coverage', or 'Exotic Cars'."
-        ]
-    };
+        const addMessage = (text, sender) => {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `message ${sender}`;
+            msgDiv.textContent = text;
+            chatbotMessages.appendChild(msgDiv);
+            chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+        };
 
-    const pickRandom = (pool) => pool[Math.floor(Math.random() * pool.length)];
+        const responsePools = {
+            greetings: ["Hello! I'm the Luxurious Towing Concierge.", "Hi! I'm here to help."],
+            status: ["Operational and ready to assist!", "Doing excellent."],
+            identity: ["I'm the Signature Concierge assistant."],
+            capabilities: ["I can help with quotes and dispatch info."],
+            exotics: ["We specialize in Ferraris, McLarens, and more."],
+            location: ["We serve all of Michigan and Metro Detroit."],
+            pricing: ["Standard tows start around $95-$150."],
+            services: ["Recovery, Transport, Lockouts, and more."],
+            contact: ["Fill out the form above for immediate dispatch."],
+            fallback: ["Could you please rephrase that?"]
+        };
 
-    const generateResponse = (input) => {
-        const query = input.toLowerCase().trim();
+        const pickRandom = (p) => p[Math.floor(Math.random() * p.length)];
+        const generateResponse = (q) => {
+            q = q.toLowerCase();
+            if (q.match(/hi|hello/)) return pickRandom(responsePools.greetings);
+            if (q.includes('price') || q.includes('cost')) return pickRandom(responsePools.pricing);
+            if (q.includes('location') || q.includes('area')) return pickRandom(responsePools.location);
+            if (q.includes('exotic') || q.includes('luxury')) return pickRandom(responsePools.exotics);
+            return pickRandom(responsePools.fallback);
+        };
 
-        // Greetings & Status
-        if (query.match(/^(hi|hello|hey|greetings)/)) return pickRandom(responsePools.greetings);
-        if (query.includes('how are you') || query.includes('how is it going')) return pickRandom(responsePools.status);
+        const handleSend = () => {
+            const text = chatbotInput.value.trim();
+            if (text) {
+                addMessage(text, 'user');
+                chatbotInput.value = '';
+                setTimeout(() => addMessage(generateResponse(text), 'bot'), 600);
+            }
+        };
 
-        // Identity & Capabilities
-        if (query.includes('who are you') || query.includes('your name') || query.includes('bot')) return pickRandom(responsePools.identity);
-        if (query.includes('what can you do') || query.includes('help me') || query.includes('capabilities')) return pickRandom(responsePools.capabilities);
-
-        // Core Business Topics
-        if (query.includes('price') || query.includes('cost') || query.includes('much') || query.includes('quote') || query.includes('rate')) return pickRandom(responsePools.pricing);
-        if (query.includes('location') || query.includes('where') || query.includes('area') || query.includes('cover') || query.includes('michigan') || query.includes('detroit')) return pickRandom(responsePools.location);
-        if (query.includes('service') || query.includes('tow') || query.includes('haul') || query.includes('truck') || query.includes('lockout') || query.includes('tire') || query.includes('jump')) return pickRandom(responsePools.services);
-        if (query.includes('exotic') || query.includes('luxury') || query.includes('sport') || query.includes('mclaren') || query.includes('ferrari') || query.includes('lambo') || query.includes('porsche') || query.includes('corvette')) return pickRandom(responsePools.exotics);
-
-        // Contact / Action
-        if (query.includes('number') || query.includes('phone') || query.includes('call') || query.includes('contact')) return pickRandom(responsePools.contact);
-
-        // Fallback
-        return pickRandom(responsePools.fallback);
-    };
-
-    const handleSend = () => {
-        const text = chatbotInput.value.trim();
-        if (text) {
-            addMessage(text, 'user');
-            chatbotInput.value = '';
-
-            // Simulate bot thinking
-            setTimeout(() => {
-                const response = generateResponse(text);
-                addMessage(response, 'bot');
-            }, 600);
-        }
-    };
-
-    chatbotSend.addEventListener('click', handleSend);
-    chatbotInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleSend();
-    });
-}
+        chatbotSend.addEventListener('click', handleSend);
+        chatbotInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleSend(); });
+    }
 });
