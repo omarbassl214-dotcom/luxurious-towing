@@ -181,7 +181,13 @@
                     </div>
                     <div class="input-group">
                         <label for="address">Pickup Address</label>
-                        <input type="text" id="address" required placeholder="Enter pickup location">
+                        <div class="input-with-action">
+                            <input type="text" id="address" required placeholder="Enter pickup location">
+                            <button type="button" id="get-location" class="action-btn" title="Pin My Location">
+                                📍
+                            </button>
+                        </div>
+                        <div id="map-preview" class="map-container hidden"></div>
                         <span id="location-hint" class="hint">Checking coverage area...</span>
                     </div>
                     <div id="price-notice" class="price-notice hidden">

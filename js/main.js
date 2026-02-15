@@ -148,6 +148,50 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotSend = document.getElementById('chatbot-send');
     const chatbotMessages = document.getElementById('chatbot-messages');
 
+    // Geolocation Drop-in Feature
+    const locationBtn = document.getElementById('get-location');
+    const addressInput = document.getElementById('address');
+    const mapPreview = document.getElementById('map-preview');
+
+    if (locationBtn) {
+        locationBtn.addEventListener('click', () => {
+            if (navigator.geolocation) {
+                locationBtn.innerHTML = '⌛'; // Loading state
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const lon = position.coords.longitude;
+
+                        // Set the address field to show "Pinned Location"
+                        addressInput.value = `Pinned: [${lat.toFixed(6)}, ${lon.toFixed(6)}]`;
+
+                        // Show Map Preview (using a static Google Maps or similar placeholder for now)
+                        // Note: For a real production map, you'd use a Leaflet or Google Maps API key
+                        mapPreview.classList.remove('hidden');
+                        mapPreview.classList.add('active');
+                        mapPreview.innerHTML = `
+                            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); color: var(--primary-color);">
+                                <span style="font-size: 2rem; margin-bottom: 10px;">📍</span>
+                                <span style="font-size: 0.8rem; letter-spacing: 1px;">COORDINATES LOCKED</span>
+                                <span style="font-size: 0.7rem; opacity: 0.6; margin-top: 5px;">${lat.toFixed(4)}, ${lon.toFixed(4)}</span>
+                            </div>
+                        `;
+
+                        locationBtn.innerHTML = '✅';
+                    },
+                    (error) => {
+                        console.error('Geolocation Error:', error);
+                        locationBtn.innerHTML = '❌';
+                        alert('Unable to retrieve location. Please type your address manually.');
+                    },
+                    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+                );
+            } else {
+                alert('Geolocation is not supported by your browser.');
+            }
+        });
+    }
+
     if (chatbotTrigger && chatbotWindow) {
         chatbotTrigger.addEventListener('click', () => {
             chatbotWindow.classList.toggle('active');
