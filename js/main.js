@@ -34,43 +34,67 @@
                 }
             });
 
+            const setLocationState = (isGreen, message) => {
+                locationHint.textContent = message;
+                locationHint.style.color = isGreen ? "#4CAF50" : "#ff4444";
+
+                addressInput.style.borderColor = isGreen ? "#4CAF50" : "#ff4444";
+                addressInput.style.backgroundColor = isGreen ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 68, 68, 0.1)";
+
+                if (isGreen) {
+                    if (nationalNotice) nationalNotice.classList.add('hidden');
+                    if (priceNotice) priceNotice.classList.add('hidden'); // Ensure yellow is gone
+                } else {
+                    if (nationalNotice) nationalNotice.classList.remove('hidden');
+                    if (priceNotice) priceNotice.classList.add('hidden'); // Prioritize Red over Yellow
+                }
+            };
+
             addressInput.addEventListener('input', (e) => {
                 const value = e.target.value.toLowerCase();
 
-                // Hide all notices first
-                if (locationHint) locationHint.textContent = "";
-                if (priceNotice) priceNotice.classList.add('hidden');
-                if (nationalNotice) nationalNotice.classList.add('hidden');
-
-                if (value.length > 3) {
-                    locationHint.textContent = "Checking coverage...";
-                    locationHint.style.color = "#d4af37";
-
-                    setTimeout(() => {
-                        // Priority 1: Check for Out-of-State Keywords
-                        const outOfStateKeywords = ['ohio', 'indiana', 'illinois', 'chicago', 'toledo', 'florida', 'texas', 'california', 'ny', 'york', 'usa'];
-                        const isOutOfState = outOfStateKeywords.some(keyword => value.includes(keyword));
-
-                        if (isOutOfState) {
-                            locationHint.textContent = "⚠️ National Transport Zone";
-                            locationHint.style.color = "#ff4444";
-                            if (nationalNotice) nationalNotice.classList.remove('hidden');
-                            return;
-                        }
-
-                        // Priority 2: Check for Michigan Keywords
-                        const isLocal = value.includes('detroit') || value.includes('michigan') || value.includes('mi') || value.includes('48');
-
-                        if (isLocal) {
-                            locationHint.textContent = "✓ In standard coverage area";
-                            locationHint.style.color = "#4CAF50";
-                        } else {
-                            // Ambiguous / Likely Local but outside main city zones
-                            locationHint.textContent = "checking mileage...";
-                            if (priceNotice) priceNotice.classList.remove('hidden');
-                        }
-                    }, 500);
+                // Reset styling if empty
+                if (value.length < 3) {
+                    addressInput.style.borderColor = "";
+                    addressInput.style.backgroundColor = "";
+                    locationHint.textContent = "";
+                    if (nationalNotice) nationalNotice.classList.add('hidden');
+                    return;
                 }
+
+                locationHint.textContent = "Checking coverage...";
+                locationHint.style.color = "#d4af37";
+
+                setTimeout(() => {
+                    // 1. Check if input is Coordinates (Math Check)
+                    const coords = value.split(',').map(n => parseFloat(n.trim()));
+                    if (coords.length === 2 && !isNaN(coords[0]) && !isNaN(coords[1])) {
+                        const [lat, lon] = coords;
+                        if (isMichigan(lat, lon)) {
+                            setLocationState(true, "✓ In standard coverage area");
+                        } else {
+                            setLocationState(false, "⚠️ National Transport Zone");
+                        }
+                        return;
+                    }
+
+                    // 2. Keyword Checks (Text Address)
+                    // Strict "Green" Keywords (Michigan Cities/generic)
+                    const isLocal = value.includes('detroit') || value.includes('michigan') || value.includes('mi') || value.includes('48') || value.includes('grand rapids') || value.includes('lansing') || value.includes('ann arbor');
+
+                    // Strict "Red" Keywords (Other States)
+                    const outOfStateKeywords = ['ohio', 'indiana', 'illinois', 'chicago', 'toledo', 'florida', 'texas', 'california', 'ny', 'york', 'usa', 'united states'];
+                    const isOutOfState = outOfStateKeywords.some(keyword => value.includes(keyword));
+
+                    if (isOutOfState) {
+                        setLocationState(false, "⚠️ National Transport Zone");
+                    } else if (isLocal) {
+                        setLocationState(true, "✓ In standard coverage area");
+                    } else {
+                        // Default to Green for ambiguous "nearby" text, unless explicit Out of State
+                        setLocationState(true, "✓ Coverage confirmed");
+                    }
+                }, 500);
             });
 
             form.addEventListener('submit', (e) => {
@@ -84,6 +108,9 @@
                     btn.textContent = "Request Sent";
                     btn.style.background = "#4CAF50";
                     form.reset();
+                    // Reset Styles
+                    addressInput.style.borderColor = "";
+                    addressInput.style.backgroundColor = "";
                     if (mapPreview) {
                         mapPreview.classList.add('hidden');
                         mapPreview.innerHTML = '';
@@ -93,7 +120,7 @@
                         pinStatus.style.background = "";
                         pinStatus.style.color = "";
                     }
-                    if (nationalNotice) nationalNotice.classList.add('hidden'); // Reset notice
+                    if (nationalNotice) nationalNotice.classList.add('hidden');
                     if (priceNotice) priceNotice.classList.add('hidden');
 
                     setTimeout(() => {
@@ -122,13 +149,10 @@
                                 // GEOFENCE CHECK
                                 const inState = isMichigan(lat, lon);
 
-                                if (nationalNotice) {
-                                    if (!inState) {
-                                        nationalNotice.classList.remove('hidden');
-                                        if (priceNotice) priceNotice.classList.add('hidden'); // Prioritize national warning
-                                    } else {
-                                        nationalNotice.classList.add('hidden');
-                                    }
+                                if (inState) {
+                                    setLocationState(true, "✓ In standard coverage area");
+                                } else {
+                                    setLocationState(false, "⚠️ National Transport Zone");
                                 }
 
                                 if (pinStatus) {
