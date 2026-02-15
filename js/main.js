@@ -43,32 +43,64 @@
                 e.preventDefault();
                 const btn = form.querySelector('button');
                 const originalText = btn.textContent;
+
+                // key check
+                const keyInput = form.querySelector('input[name="access_key"]');
+                if (!keyInput || keyInput.value === 'YOUR_ACCESS_KEY_HERE') {
+                    alert('System Error: Email Access Key not configured. Please contact the administrator.');
+                    return;
+                }
+
                 btn.textContent = "Dispatching...";
                 btn.disabled = true;
 
-                // Simulate Dispatch
-                setTimeout(() => {
-                    alert(`Request received! A dispatch team has been notified.`);
-                    btn.textContent = "Request Sent";
-                    btn.style.background = "#4CAF50";
-                    form.reset();
+                const formData = new FormData(form);
+                const object = Object.fromEntries(formData);
+                const json = JSON.stringify(object);
 
-                    if (mapPreview) {
-                        mapPreview.classList.add('hidden');
-                        mapPreview.innerHTML = '';
-                    }
-                    if (pinStatus) {
-                        pinStatus.textContent = "Ready to Pin";
-                        pinStatus.style.background = "";
-                        pinStatus.style.color = "";
-                    }
+                fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
+                    body: json
+                })
+                    .then(async (response) => {
+                        let json = await response.json();
+                        if (response.status == 200) {
+                            // Success
+                            alert(`Request received! A dispatch team has been notified.`);
+                            btn.textContent = "Request Sent";
+                            btn.style.background = "#4CAF50";
+                            form.reset();
 
-                    setTimeout(() => {
-                        btn.textContent = originalText;
-                        btn.disabled = false;
-                        btn.style.background = "";
-                    }, 3000);
-                }, 1500);
+                            if (mapPreview) {
+                                mapPreview.classList.add('hidden');
+                                mapPreview.innerHTML = '';
+                            }
+                            if (pinStatus) {
+                                pinStatus.textContent = "Ready to Pin";
+                                pinStatus.style.background = "";
+                                pinStatus.style.color = "";
+                            }
+                        } else {
+                            // Web3Forms Error
+                            console.log(response);
+                            alert(json.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                        alert('Something went wrong. Please try again or call us directly.');
+                    })
+                    .finally(() => {
+                        setTimeout(() => {
+                            btn.textContent = originalText;
+                            btn.disabled = false;
+                            btn.style.background = "";
+                        }, 3000);
+                    });
             });
 
             // Quick Pin - Just gets coordinates, no validation
