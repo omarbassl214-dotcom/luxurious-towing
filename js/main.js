@@ -15,12 +15,19 @@
         const addressInput = document.querySelector('#address');
         const locationHint = document.querySelector('#location-hint');
         const priceNotice = document.querySelector('#price-notice');
+        const nationalNotice = document.getElementById('national-notice'); // NEW
         const quickPin = document.getElementById('quick-pin');
         const pinStatus = document.getElementById('pin-status');
         const mapPreview = document.getElementById('map-preview');
 
+        // Helper: Michigan Geofence Check
+        // Approx Box: Lat 41.6 to 48.3, Lon -90.5 to -82.3
+        const isMichigan = (lat, lon) => {
+            return (lat >= 41.6 && lat <= 48.3) && (lon >= -90.5 && lon <= -82.3);
+        };
+
         if (form && addressInput) {
-            // Auto-select text on click for easy copy-paste
+            // Auto-select text on click
             addressInput.addEventListener('click', () => {
                 if (addressInput.value.includes(',')) {
                     addressInput.select();
@@ -29,14 +36,39 @@
 
             addressInput.addEventListener('input', (e) => {
                 const value = e.target.value.toLowerCase();
-                if (value.length > 5) {
-                    locationHint.textContent = "Checking area...";
+
+                // Hide all notices first
+                if (locationHint) locationHint.textContent = "";
+                if (priceNotice) priceNotice.classList.add('hidden');
+                if (nationalNotice) nationalNotice.classList.add('hidden');
+
+                if (value.length > 3) {
+                    locationHint.textContent = "Checking coverage...";
                     locationHint.style.color = "#d4af37";
+
                     setTimeout(() => {
-                        const isLocal = value.includes('detroit') || value.includes('michigan') || value.includes('mi');
-                        locationHint.textContent = isLocal ? "✓ In standard coverage area" : "Outside standard zone";
-                        locationHint.style.color = isLocal ? "#4CAF50" : "#ff4444";
-                        if (priceNotice) priceNotice.classList.toggle('hidden', isLocal);
+                        // Priority 1: Check for Out-of-State Keywords
+                        const outOfStateKeywords = ['ohio', 'indiana', 'illinois', 'chicago', 'toledo', 'florida', 'texas', 'california', 'ny', 'york', 'usa'];
+                        const isOutOfState = outOfStateKeywords.some(keyword => value.includes(keyword));
+
+                        if (isOutOfState) {
+                            locationHint.textContent = "⚠️ National Transport Zone";
+                            locationHint.style.color = "#ff4444";
+                            if (nationalNotice) nationalNotice.classList.remove('hidden');
+                            return;
+                        }
+
+                        // Priority 2: Check for Michigan Keywords
+                        const isLocal = value.includes('detroit') || value.includes('michigan') || value.includes('mi') || value.includes('48');
+
+                        if (isLocal) {
+                            locationHint.textContent = "✓ In standard coverage area";
+                            locationHint.style.color = "#4CAF50";
+                        } else {
+                            // Ambiguous / Likely Local but outside main city zones
+                            locationHint.textContent = "checking mileage...";
+                            if (priceNotice) priceNotice.classList.remove('hidden');
+                        }
                     }, 500);
                 }
             });
@@ -61,6 +93,9 @@
                         pinStatus.style.background = "";
                         pinStatus.style.color = "";
                     }
+                    if (nationalNotice) nationalNotice.classList.add('hidden'); // Reset notice
+                    if (priceNotice) priceNotice.classList.add('hidden');
+
                     setTimeout(() => {
                         btn.textContent = originalText;
                         btn.disabled = false;
@@ -78,32 +113,45 @@
 
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
-                                const lat = pos.coords.latitude.toFixed(6);
-                                const lon = pos.coords.longitude.toFixed(6);
+                                const lat = parseFloat(pos.coords.latitude.toFixed(6));
+                                const lon = parseFloat(pos.coords.longitude.toFixed(6));
                                 const gMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
 
-                                // Set input to raw coordinates (Best for Google Search copy-paste)
                                 addressInput.value = `${lat}, ${lon}`;
 
+                                // GEOFENCE CHECK
+                                const inState = isMichigan(lat, lon);
+
+                                if (nationalNotice) {
+                                    if (!inState) {
+                                        nationalNotice.classList.remove('hidden');
+                                        if (priceNotice) priceNotice.classList.add('hidden'); // Prioritize national warning
+                                    } else {
+                                        nationalNotice.classList.add('hidden');
+                                    }
+                                }
+
                                 if (pinStatus) {
-                                    pinStatus.textContent = "✅ Secured";
-                                    pinStatus.style.background = "rgba(76, 175, 80, 0.1)";
-                                    pinStatus.style.color = "#4CAF50";
+                                    pinStatus.textContent = inState ? "✅ Simply Secured" : "⚠️ Out of Area";
+                                    pinStatus.style.background = inState ? "rgba(76, 175, 80, 0.1)" : "rgba(255, 68, 68, 0.1)";
+                                    pinStatus.style.color = inState ? "#4CAF50" : "#ff4444";
                                 }
 
                                 if (mapPreview) {
                                     mapPreview.classList.remove('hidden');
                                     mapPreview.classList.add('active');
+                                    const stateText = inState ? "MICHIGAN DETECTED" : "OUT OF STATE";
+                                    const stateColor = inState ? "var(--primary-color)" : "#ff4444";
+
                                     mapPreview.innerHTML = `
-                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(0, 0, 0, 0.8); border: 1px solid var(--primary-color); border-radius: 8px; cursor: pointer;">
+                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(0, 0, 0, 0.8); border: 1px solid ${stateColor}; border-radius: 8px; cursor: pointer;">
                                             <span style="font-size: 1.2rem; margin-bottom: 8px;">📍</span>
-                                            <a href="${gMapsUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
-                                                OPEN IN GOOGLE MAPS ↗
+                                            <a href="${gMapsUrl}" target="_blank" style="color: ${stateColor}; text-decoration: none; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
+                                                OPEN IN MAPS ↗
                                             </a>
-                                            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.5); margin-top: 5px;">${lat}, ${lon}</span>
+                                            <span style="font-size: 0.6rem; color: ${stateColor}; margin-top: 5px; font-weight:bold;">${stateText}</span>
                                         </div>`;
 
-                                    // Make the whole box clickable as well
                                     mapPreview.onclick = (e) => {
                                         window.open(gMapsUrl, '_blank');
                                     };

@@ -778,6 +778,28 @@ a {
     font-size: 0.9rem;
 }
 
+.national-notice {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: rgba(255, 68, 68, 0.15);
+    border: 1px solid #ff4444;
+    border-radius: 8px;
+    color: #ff4444;
+    text-align: center;
+    box-shadow: 0 0 15px rgba(255, 68, 68, 0.1);
+    animation: fadeInUp 0.3s ease;
+}
+
+.national-notice p {
+    margin: 0;
+}
+
+.national-notice .small {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 5px;
+}
+
 .hidden {
     display: none;
 }
