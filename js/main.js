@@ -117,7 +117,7 @@
                                 const lon = parseFloat(pos.coords.longitude.toFixed(6));
                                 const gMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
 
-                                addressInput.value = `${lat}, ${lon}`;
+                                addressInput.value = gMapsUrl;
 
                                 if (pinStatus) {
                                     pinStatus.textContent = "✅ Location Secured";
