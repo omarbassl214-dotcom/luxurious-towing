@@ -20,6 +20,13 @@
         const mapPreview = document.getElementById('map-preview');
 
         if (form && addressInput) {
+            // Auto-select text on click for easy copy-paste
+            addressInput.addEventListener('click', () => {
+                if (addressInput.value.includes(',')) {
+                    addressInput.select();
+                }
+            });
+
             addressInput.addEventListener('input', (e) => {
                 const value = e.target.value.toLowerCase();
                 if (value.length > 5) {
@@ -75,7 +82,7 @@
                                 const lon = pos.coords.longitude.toFixed(6);
                                 const gMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
 
-                                // Set input to coordinates (Best for Google Search copy-paste)
+                                // Set input to raw coordinates (Best for Google Search copy-paste)
                                 addressInput.value = `${lat}, ${lon}`;
 
                                 if (pinStatus) {
@@ -88,17 +95,18 @@
                                     mapPreview.classList.remove('hidden');
                                     mapPreview.classList.add('active');
                                     mapPreview.innerHTML = `
-                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); border-radius: 8px; border: 1px solid var(--primary-color);">
-                                            <span style="font-size: 1.2rem; margin-bottom: 5px;">📍</span>
-                                            <a href="${gMapsUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 5px;">
+                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(0, 0, 0, 0.8); border: 1px solid var(--primary-color); border-radius: 8px; cursor: pointer;">
+                                            <span style="font-size: 1.2rem; margin-bottom: 8px;">📍</span>
+                                            <a href="${gMapsUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 0.8rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase;">
                                                 OPEN IN GOOGLE MAPS ↗
                                             </a>
-                                            <span style="font-size: 0.6rem; opacity: 0.6; margin-top: 5px;">Coordinations: ${lat}, ${lon}</span>
+                                            <span style="font-size: 0.6rem; color: rgba(255,255,255,0.5); margin-top: 5px;">${lat}, ${lon}</span>
                                         </div>`;
 
-                                    // Also make the whole preview box a link for convenience
-                                    mapPreview.style.cursor = 'pointer';
-                                    mapPreview.onclick = () => window.open(gMapsUrl, '_blank');
+                                    // Make the whole box clickable as well
+                                    mapPreview.onclick = (e) => {
+                                        window.open(gMapsUrl, '_blank');
+                                    };
                                 }
                             },
                             () => {
