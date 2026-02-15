@@ -230,6 +230,16 @@
         </div>
     </div>
 
+    <script>
+        // Emergency Fail-Safe: Always hide splash screen after 3 seconds
+        setTimeout(function () {
+            var s = document.getElementById('splash-screen');
+            if (s) {
+                s.style.opacity = '0';
+                setTimeout(function () { s.style.display = 'none'; }, 500);
+            }
+        }, 3000);
+    </script>
     <script type="module" src="js/main.js"></script>
 </body>
 
