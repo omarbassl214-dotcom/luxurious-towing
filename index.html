@@ -180,15 +180,15 @@
                     <input type="hidden" name="from_name" value="Luxurious Towing Site">
                     <div class="input-group">
                         <label for="name">Full Name</label>
-                        <input type="text" id="name" required placeholder="John Doe">
+                        <input type="text" id="name" name="name" required placeholder="John Doe">
                     </div>
                     <div class="input-group">
                         <label for="phone">Phone Number</label>
-                        <input type="tel" id="phone" required placeholder="(313) 555-0123">
+                        <input type="tel" id="phone" name="phone" required placeholder="(313) 555-0123">
                     </div>
                     <div class="input-group">
                         <label for="service-type">Service Required</label>
-                        <select id="service-type" required>
+                        <select id="service-type" name="service_type" required>
                             <option value="" disabled selected>Select Service...</option>
                             <option value="standard">Standard Towing (Flatbed/Wheel-Lift)</option>
                             <option value="exotic">💎 Exotic Vehicle Transport</option>
@@ -201,12 +201,12 @@
                     </div>
                     <div class="input-group">
                         <label for="vehicle-type">Vehicle Type</label>
-                        <select id="vehicle-type" required>
+                        <select id="vehicle-type" name="vehicle_type" required>
                             <option value="standard">Standard (Sedan, SUV, Truck)</option>
                             <option value="exotic">Exotic / Luxury / Low Clearance</option>
                             <option value="roadside">Roadside Assistance (Jumpstart, Tire, etc.)</option>
                         </select>
-                    </div>
+                    </div><!-- Form Fixed v2 -->
                     <div class="input-group">
                         <label for="address">Pickup Address</label>
                         <input type="text" id="address" required
