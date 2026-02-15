@@ -45,8 +45,15 @@
                     btn.textContent = "Request Sent";
                     btn.style.background = "#4CAF50";
                     form.reset();
-                    if (mapPreview) mapPreview.classList.add('hidden');
-                    if (pinStatus) pinStatus.textContent = "Ready to Pin";
+                    if (mapPreview) {
+                        mapPreview.classList.add('hidden');
+                        mapPreview.innerHTML = '';
+                    }
+                    if (pinStatus) {
+                        pinStatus.textContent = "Ready to Pin";
+                        pinStatus.style.background = "";
+                        pinStatus.style.color = "";
+                    }
                     setTimeout(() => {
                         btn.textContent = originalText;
                         btn.disabled = false;
@@ -60,14 +67,16 @@
                     if (navigator.geolocation) {
                         if (pinStatus) {
                             pinStatus.textContent = "⌛ Securing...";
-                            pinStatus.style.borderColor = "var(--primary-color)";
                         }
 
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
                                 const lat = pos.coords.latitude.toFixed(6);
                                 const lon = pos.coords.longitude.toFixed(6);
-                                addressInput.value = `https://www.google.com/maps?q=${lat},${lon}`;
+                                const gMapsUrl = `https://www.google.com/maps?q=${lat},${lon}`;
+
+                                // Set input to coordinates (Best for Google Search copy-paste)
+                                addressInput.value = `${lat}, ${lon}`;
 
                                 if (pinStatus) {
                                     pinStatus.textContent = "✅ Secured";
@@ -79,15 +88,22 @@
                                     mapPreview.classList.remove('hidden');
                                     mapPreview.classList.add('active');
                                     mapPreview.innerHTML = `
-                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); border-radius: 8px;">
+                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); border-radius: 8px; border: 1px solid var(--primary-color);">
                                             <span style="font-size: 1.2rem; margin-bottom: 5px;">📍</span>
-                                            <span style="font-size: 0.75rem; color: var(--primary-color); letter-spacing: 1px; font-weight: bold;">DISPATCH LINK READY</span>
+                                            <a href="${gMapsUrl}" target="_blank" style="color: var(--primary-color); text-decoration: none; font-size: 0.75rem; font-weight: bold; letter-spacing: 1px; display: flex; align-items: center; gap: 5px;">
+                                                OPEN IN GOOGLE MAPS ↗
+                                            </a>
+                                            <span style="font-size: 0.6rem; opacity: 0.6; margin-top: 5px;">Coordinations: ${lat}, ${lon}</span>
                                         </div>`;
+
+                                    // Also make the whole preview box a link for convenience
+                                    mapPreview.style.cursor = 'pointer';
+                                    mapPreview.onclick = () => window.open(gMapsUrl, '_blank');
                                 }
                             },
                             () => {
                                 if (pinStatus) pinStatus.textContent = "❌ Failed";
-                                alert('Please enable location access to use Quick Pin.');
+                                alert('Please allow location access to use Quick Pin.');
                             },
                             { enableHighAccuracy: true, timeout: 5000 }
                         );
@@ -118,7 +134,7 @@
 
             const generateResponse = (q) => {
                 q = q.toLowerCase();
-                if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. Use the form for a custom quote.";
+                if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. For exotics, use our form for a custom quote.";
                 if (q.includes('location') || q.includes('area')) return "We serve all of Michigan, with 24/7 service in Metro Detroit.";
                 return "I'm the Luxurious Towing Concierge. How can I assist you today?";
             };
