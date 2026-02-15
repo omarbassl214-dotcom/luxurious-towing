@@ -1,7 +1,7 @@
-// Hard-Reset Main.js for Maximum Reliability
+// Luxurious Towing - Final Robust Main Script
 (function () {
     function init() {
-        // 1. Splash Screen Control
+        // 1. Splash Screen Control (Runs first)
         const splash = document.getElementById('splash-screen');
         if (splash) {
             setTimeout(() => {
@@ -18,7 +18,6 @@
         const locationBtn = document.getElementById('get-location');
         const mapPreview = document.getElementById('map-preview');
 
-        // 3. Form Logic (Optional Check)
         if (form && addressInput) {
             addressInput.addEventListener('input', (e) => {
                 const value = e.target.value.toLowerCase();
@@ -45,6 +44,7 @@
                     btn.textContent = "Request Sent";
                     btn.style.background = "#4CAF50";
                     form.reset();
+                    if (mapPreview) mapPreview.classList.add('hidden');
                     setTimeout(() => {
                         btn.textContent = originalText;
                         btn.disabled = false;
@@ -59,24 +59,72 @@
                         locationBtn.innerHTML = '⌛';
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
-                                addressInput.value = `Pinned: [${pos.coords.latitude.toFixed(6)}, ${pos.coords.longitude.toFixed(6)}]`;
+                                const lat = pos.coords.latitude.toFixed(6);
+                                const lon = pos.coords.longitude.toFixed(6);
+                                // Generate Direct Google Maps Link
+                                addressInput.value = `https://www.google.com/maps?q=${lat},${lon}`;
+
                                 if (mapPreview) {
                                     mapPreview.classList.remove('hidden');
                                     mapPreview.classList.add('active');
                                     mapPreview.innerHTML = `
-                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); color: var(--primary-color);">
-                                            <span style="font-size: 2rem; margin-bottom: 10px;">📍</span>
-                                            <span style="font-size: 0.8rem; letter-spacing: 1px;">COORDINATES LOCKED</span>
+                                        <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background: rgba(51, 63, 72, 0.6); border-radius: 8px;">
+                                            <span style="font-size: 1.5rem; margin-bottom: 5px;">📍</span>
+                                            <span style="font-size: 0.8rem; color: var(--primary-color); letter-spacing: 1px; font-weight: bold;">GOOGLE MAPS LINK SECURED</span>
+                                            <span style="font-size: 0.7rem; opacity: 0.7; margin-top: 5px;">Ready for Dispatch</span>
                                         </div>`;
                                 }
                                 locationBtn.innerHTML = '✅';
                             },
-                            () => { locationBtn.innerHTML = '❌'; alert('Direct location access failed. Please type address.'); },
+                            () => { locationBtn.innerHTML = '❌'; alert('Please enable location access in your browser.'); },
                             { enableHighAccuracy: true, timeout: 5000 }
                         );
+                    } else {
+                        alert('Your browser does not support geolocation.');
                     }
                 });
             }
+        }
+
+        // 3. AI Concierge
+        const trigger = document.getElementById('chatbot-trigger');
+        const windowEl = document.getElementById('chatbot-window');
+        const closeBtn = document.getElementById('chatbot-close');
+        const input = document.getElementById('chatbot-input-field');
+        const sendBtn = document.getElementById('chatbot-send');
+        const messages = document.getElementById('chatbot-messages');
+
+        if (trigger && windowEl) {
+            trigger.addEventListener('click', () => windowEl.classList.toggle('active'));
+            if (closeBtn) closeBtn.addEventListener('click', () => windowEl.classList.remove('active'));
+
+            const addMessage = (text, sender) => {
+                const div = document.createElement('div');
+                div.className = `message ${sender}`;
+                div.textContent = text;
+                messages.appendChild(div);
+                messages.scrollTop = messages.scrollHeight;
+            };
+
+            const generateResponse = (q) => {
+                q = q.toLowerCase();
+                if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. For exotics, use our form for a custom quote.";
+                if (q.includes('location') || q.includes('area')) return "We serve all of Michigan, with 24/7 service in Metro Detroit.";
+                if (q.includes('exotic') || q.includes('luxury')) return "We use zero-degree flatbeds for low-clearance supercars.";
+                return "I'm the Luxurious Towing Concierge. How can I assist with your recovery today?";
+            };
+
+            const send = () => {
+                const text = input.value.trim();
+                if (text) {
+                    addMessage(text, 'user');
+                    input.value = '';
+                    setTimeout(() => addMessage(generateResponse(text), 'bot'), 600);
+                }
+            };
+
+            if (sendBtn) sendBtn.addEventListener('click', send);
+            if (input) input.addEventListener('keypress', (e) => { if (e.key === 'Enter') send(); });
         }
 
         // 4. UI General
@@ -88,15 +136,15 @@
             });
         });
 
-        const vid = document.getElementById('v0');
-        if (vid) vid.play().catch(() => { });
+        const v0 = document.getElementById('v0');
+        if (v0) v0.play().catch(() => { });
 
         // Mobile Menu
-        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const menuBtn = document.querySelector('.mobile-menu-toggle');
         const menuOverlay = document.querySelector('.mobile-menu-overlay');
-        if (menuToggle && menuOverlay) {
-            menuToggle.addEventListener('click', () => {
-                menuToggle.classList.toggle('active');
+        if (menuBtn && menuOverlay) {
+            menuBtn.addEventListener('click', () => {
+                menuBtn.classList.toggle('active');
                 menuOverlay.classList.toggle('active');
             });
         }
