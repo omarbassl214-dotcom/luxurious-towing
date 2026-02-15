@@ -143,7 +143,7 @@
             const generateResponse = (q) => {
                 q = q.toLowerCase();
                 if (q.includes('price') || q.includes('cost')) return "Standard tows start at $95. For exotics, use our form for a custom quote.";
-                if (q.includes('location') || q.includes('area')) return "We serve all of Michigan, with 24/7 service in Metro Detroit.";
+                if (q.includes('location') || q.includes('area')) return "We are based in Michigan but offer nationwide transport for all vehicle types.";
                 return "I'm the Luxurious Towing Concierge. How can I assist you today?";
             };
 
